@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <title>이한결 소개 페이지</title>
+    <style>
+        .all_wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            margin-top: 30px;
+        }
+
+        .title {
+            margin-top: 10px;
+        }
+
+        .이유 {
+            text-align: center;
+            display: none;
+            margin-top: 10px;
+        }
+
+        .myad {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .mywork {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .mybtn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mybtn > button {
+            margin-top: 10px;
+        }
+
+        .mybtn > button:hover {
+            transform: scale(120%);
+            transition: 0.5s;
+        }
+
+        .pic {
+            width: 320px;
+            height: 180px;
+            background-image: url('https://i.ytimg.com/vi/GBjA8fZ3DdM/maxresdefault.jpg');
+            background-position: center;
+            background-size: cover;
+        }
+
+
+        .mypost {
+            width: 95%;
+            max-width: 500px;
+            margin: 20px auto 20px auto;
+            border-radius: 10px;
+
+            box-shadow: 0px 0px 3px 0px black;
+            padding: 20px;
+        }
+
+        .mypost > button {
+            margin-top: 15px;
+        }
+
+        .mycards {
+            width: 95%;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .mycards > .card {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .mainbtn {
+            margin: 15px auto 0px auto
+        }
+    </style>
+    <script>
+        function openR() {
+            document.getElementById('reason').style.display = 'block'
+        }
+
+        function goodThing() {
+            document.getElementById('advantage').style.display = 'block'
+        }
+
+        function workstyle() {
+            document.getElementById('togehter').style.display = 'block'
+        }
+
+        function cancleWorkstyle() {
+            document.getElementById('togehter').style.display = 'none'
+        }
+
+        function cancleWorkstyle1() {
+            document.getElementById('advantage').style.display = 'none'
+        }
+
+        function cancleWorkstyle2() {
+            document.getElementById('reason').style.display = 'none'
+        }
+
+        $(document).ready(function () {
+            show_comment();
+        });
+
+        function show_comment() {
+            $.ajax({
+                type: "GET",
+                url: "/leehanSelf/comment",
+                data: {},
+                success: function (response) {
+                    let rows = response['comments']
+                    for (let i = 0; i < rows.length; i++) {
+                        let name = rows[i]['name']
+                        let comment = rows[i]['comment']
+                        let id = rows[i]['_id']
+                        let temp_html = `<div class="card">
+                                            <div class="card-body">
+                                                <blockquote class="blockquote mb-0">
+                                                    <p>${comment}</p>
+                                                    <footer class="blockquote-footer">${name}</footer>
+
+                                                </blockquote>
+                                                 <button onclick="comment_delete('${id}')" type="button" class="btn btn-outline-primary">삭제</button>
+                                                 <button onclick="comment_update('${id}')" type="button" class="btn btn-outline-warning">수정</button>
+
+                                            </div>
+                                        </div>`
+                        $('#commentlist').append(temp_html)
+                    }
+                }
+            });
+        }
+
+        function save_comment() {
+            let name = $('#name').val()
+            let comment = $('#comment').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/leehanSelf/comment",
+                data: {'name_give': name, 'comment_give': comment},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
+        function comment_delete(id) {
+            $.ajax({
+                type: "DELETE",
+                url: `/leehanSelf/comments/${id}`,
+                data: {},
+                success: function (response) {
+                    alert(response['msg'])
+                    window.location.reload()
+                }
+            })
+        }
+
+        function comment_update(id) {
+            let name = $('#name').val()
+            let comment = $('#comment').val()
+            $.ajax({
+                type: "PUT",
+                url: `/leehanSelf/comments/${id}`,
+                data: {
+                    name_give: name,
+                    comment_give: comment
+                },
+                success: function (response) {
+                    if (name === '' && comment === '') {
+                        alert('빈칸입니다.')
+                    } else {
+                        alert(response["msg"])
+                        window.location.reload()
+                    }
+                }
+            });
+        }
+                function backhome(){
+            window.history.back()
+        }
+    </script>
+</head>
+<body>
+<div class="all_wrap">
+    <div class="pic" id="nillu"></div>
+    <h1 class="title">ㄴㄷ10 이한결 입니다.</h1>
+    <h2>MBTI는 현재는 enfp입니다.</h2>
+    <h2>저를 가장 잘 표현하는 단어는 <span style="color: red">오류</span> 라고 생각합니다.</h2>
+    <div class="mybtn">
+        <button onclick="openR()" ondblclick="cancleWorkstyle2()" type="button" class="btn btn-success"> 오류라 생각하는 이유
+        </button>
+        <div class="이유" id="reason">
+            <p>제가 살면서 많은 전산 오류를 겪었기 때문입니다.</br>
+                가장 인상 깊은 전산 오류는 전산 오류를 통한 <span style="color: darkolivegreen">군 면제 정도 입니다.</span></br>
+                자세한 이야기는 다음에 같은 팀이 된다면 들려드리겠습니다.</p>
+        </div>
+        <button onclick="goodThing()" ondblclick="cancleWorkstyle1()" type="button" class="btn btn-success">장점</button>
+        <p class="myad" id="advantage">호불호가 적은게 저의 장점이라고 생각합니다.</p>
+        <button onclick="workstyle()" ondblclick="cancleWorkstyle()" type="button" class="btn btn-success">협업</button>
+        <p id="togehter" class="mywork">웬만하면 OK맨 이고 자발적으로 나서지 않는 스타일입니다.</p>
+    </div>
+
+
+    <div class="mypost">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="name" placeholder="url">
+            <label for="floatingInput">닉네임</label>
+        </div>
+        <div class="form-floating">
+            <textarea class="form-control" placeholder="Leave a comment here" id="comment"
+                      style="height: 100px"></textarea>
+            <label for="floatingTextarea2">응원댓글</label>
+        </div>
+        <div class="mainbtn">
+            <button onclick="save_comment()" type="button" class="btn btn-dark">댓글 남기기</button>
+             <button onclick="backhome()" type="button" class="btn btn-dark">돌아가기</button>
+        </div>
+    </div>
+    <div class="mycards" id="commentlist"></div>
+</div>
+
+</body>
+</html>

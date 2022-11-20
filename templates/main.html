@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <link rel="import" href="../static/styles.css">
+    <link rel="import" href="index.html">
+    <title>ㄴㄷ 10</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+
+        .mytitle {
+            width: 100%;
+            height: 650px;
+
+            background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://pbs.twimg.com/media/DkqQQT2U4AEdiin.jpg');
+            background-position: center;
+            background-size: cover;
+
+            color: white;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mytitleBottom {
+            background-color: white;
+            height: 100px;
+            width: 100%;
+
+            background-position: center;
+            background-size: cover;
+
+            color: black;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .teamwrap {
+            max-width: 1100px;
+            width: 95%;
+            margin: 0px auto 0px auto;
+            padding: 20px;
+        }
+
+        .showBox {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wrap {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mygoodbox {
+            width: 95%;
+            max-width: 500px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px 0px lightblue;
+            margin: 20px 10px auto 0px;
+            border-radius: 10px;
+        }
+
+        .mybad > input {
+            width: 70%;
+        }
+
+        .mygood {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mygood > input {
+            width: 70%;
+        }
+
+        .mygoodbox > li {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 10px;
+            min-height: 48px;
+        }
+
+        .mygoodbox > li > h2 {
+            max-width: 75%;
+            font-size: 20px;
+            font-weight: 500;
+            margin-right: auto;
+            margin-bottom: 0px;
+        }
+
+        .mygoodbox > li > h2.done {
+            text-decoration: line-through;
+            color: royalblue;
+        }
+
+    </style>
+    <script>
+   $(document).ready(function () {
+            show_good();
+        });
+        function show_good() {
+            $.ajax({
+                type: "GET",
+                url: "/good",
+                data: {},
+                success: function (response) {
+                    let rows = response['goods']
+                    for (let i = 0; i < rows.length; i++) {
+                        let id = rows[i]['_id']
+                        let good = rows[i]['good']
+                        let num = rows[i]['num']
+                        let done = rows[i]['done']
+
+                        let temp_html = ``
+                        if (done == 0) {
+                            temp_html = `<li>
+                                            <h2>✅ ${good}</h2>
+                                            <button onClick="done_good(${num})" type="button" className="btn btn-outline-primary">완료!
+                                            </button>
+                                             <button onclick="good_delet('${id}')">delet</button>
+                                             <button onclick="update_goodThing('${id}')">수정</button>
+                                        </li>
+                                        </li>`
+                        } else {
+                            temp_html = ` <li>
+                                            <h2 class="done">✅ ${good}</h2>
+                                             <button onclick="good_delet('${id}')">delet</button>
+                                             <button onclick="update_goodThing('${id}')">수정</button>
+                                        </li>
+                                        </li>`
+                        }
+                        $('#goodThing-list').append(temp_html)
+                    }
+
+                }
+            });
+        }
+
+        function good_delet(id) {
+            $.ajax({
+                type: "DELETE",
+                url: `/goods/${id}`,
+                data: {},
+                success: function (response) {
+                    alert(response['msg'])
+                    window.location.reload()
+                }
+            })
+        }
+
+        function save_good() {
+            let good = $('#goodThing').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/good",
+                data: {good_give: good},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
+        function done_good(num) {
+            $.ajax({
+                type: "POST",
+                url: "/good/done",
+                data: {num_give: num},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
+        function update_goodThing(id) {
+            let goodThing = $('#goodThing').val()
+            $.ajax({
+                type: "PUT",
+                url: `/goods/${id}`,
+                data: {
+                    good_give: goodThing
+                },
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
+    </script>
+</head>
+
+<body>
+<div>
+    <div class="mytitle">
+        <h1>Node.js 4기 A반 10조 팀 소개 웹페이지 입니다</h1>
+        <p>저희 조 이름은 ㄴㄷ10 입니다. 명목상은 노드 10조라 ㄴㄷ10 이지만 사실 저희 팀원들의 공통점이</p>
+        <p>서브컬처를 좋아한다는 점을 감안하여 ㄴㄷㅆ 이라 아이디어가 나왔으나 사회 통념을 감안해 이렇게 표기 했습니다.</p>
+        <p>저희 조는 비전공자로 이루어져 있고 코딩에 대해 아직 한참 배우고 있는 단계에 있습니다.</p>
+        <p>많이 부족하지만 최대한 많은 것을 흡수하여 좋은 개발자가 되려 합니다.</p>
+        <p>그리고 즐겁게 코딩을 할 수 있는 개발자가 되고 싶습니다.</p>
+        <p>상호간의 배려와 즐거운 코딩을 할 것을 약속하겠습니다.</p>
+        <a href="https://velog.io/@nilee23" target="blank">최환준</a>
+        <a href="https://velog.io/@dlgksruf098" target="blank">이한결</a>
+        <a href="https://velog.io/@alestorm" target="blank">고호성</a>
+        <a href="https://chldnjsqls0202.tistory.com/" target="blank">최원빈</a>
+        <a href="https://dfadfadsfffadfafdfd.tistory.com/" target="blank">이해담</a>
+    </div>
+    <div class="mytitleBottom">
+        <h1>팀원</h1>
+    </div>
+    <div class="teamwrap">
+        <div class="row row-cols-1 row-cols-md-5 g-5">
+            <div class="col">
+                <div class="card">
+                    <a class="imglink" href="/leehanSelf">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMZ7-ca-UZRoVRjvyay05yUWmOPUAbMxz8QA&usqp=CAU"
+                             class="card-img-top" alt="..."></a>
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">이한결</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <a class="imglink"href="/bin">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMZ7-ca-UZRoVRjvyay05yUWmOPUAbMxz8QA&usqp=CAU"
+                             class="card-img-top" alt="...">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">최원빈</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <a class="imglink" href="/ho">
+                        <img src="https://w.namu.la/s/0ee6c08ac2b5290a2190f440d0902b0ec83a9b1c19753b422e2a3725119b8322acd6bb6fcfe1437835bd126a05470e89ca27cb6fdc4c557b6ade5818c96c2d896add394302624567f58468bfece0f0e089bfcf4d44b3f24e03530dcd3fdb36a7"
+                             class="card-img-top" alt="...">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">고호성</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <a class="imglink" href="/headam">
+                        <img src="static/징버거.png"
+                             class="card-img-top" alt="...">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">이해담</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <a class="imglink" href="jun">
+                        <img src="static/아이네.png"
+                             class="card-img-top" alt="...">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">최환준</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="hebit" id="comment">
+    <div class="wrap">
+        <div class="mygoodbox">
+            <div class="mygood">
+                <input id="goodThing" class="form-control" type="text" placeholder="소원을 적으세요">
+                <button onclick="save_good()" type="button" class="btn btn-outline-primary">기록하기</button>
+            </div>
+        </div>
+    </div>
+    <div class="showBox">
+        <div class="mygoodbox" id="goodThing-list">
+        </div>
+    </div>
+</div>
+</body>
+</html>
